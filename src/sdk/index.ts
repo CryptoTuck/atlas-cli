@@ -29,14 +29,26 @@ export interface GenerateOptions {
   shopifyProductId?: string;
   region?: string;
   language?: string;
+  /** Generation type: 'single_product_shop' for full store, 'product_page' for page only */
   type?: 'single_product_shop' | 'product_page';
+  /** Template source: 'atlas_library', 'existing_theme', or 'default' */
+  templateSource?: 'atlas_library' | 'existing_theme' | 'default';
+  /** Atlas template ID (for templateSource='atlas_library') */
   templateId?: string;
+  /** Shopify theme ID (required for product_page, optional for existing_theme) */
+  themeId?: string;
+  /** Product page template source: 'atlas_default' or 'existing_page' */
+  pageTemplateSource?: 'atlas_default' | 'existing_page';
+  /** Existing product page template name (for pageTemplateSource='existing_page') */
+  productPageTemplate?: string;
+  /** Research context ID for ICP-specific generation */
   researchContextId?: string;
 }
 
 export interface GenerateResponse {
   job_id: string;
   status: string;
+  type: string;
   poll_url: string;
   message: string;
 }
@@ -53,6 +65,11 @@ export interface StatusResponse {
     product_images?: number;
   };
   error?: string;
+}
+
+export interface ImportOptions {
+  /** Only import the product, not the theme */
+  onlyImportProduct?: boolean;
 }
 
 export interface ImportResponse {
@@ -79,6 +96,44 @@ export interface ListStoresResponse {
   total: number;
   limit: number;
   offset: number;
+}
+
+export interface Template {
+  id: number;
+  name: string;
+  theme_version: string;
+  theme_version_folder: string;
+  thumbnail_url?: string;
+  stores_using: number;
+  category?: string;
+  description?: string;
+}
+
+export interface ListTemplatesResponse {
+  templates: Template[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface Theme {
+  id: number;
+  name: string;
+  role: string;
+  is_atlas_theme: boolean;
+  atlas_version?: string;
+  created_at: string;
+  updated_at: string;
+  product_templates?: ProductTemplate[];
+}
+
+export interface ProductTemplate {
+  key: string;
+  name: string;
+}
+
+export interface ListThemesResponse {
+  themes: Theme[];
 }
 
 export class AtlasAPIError extends Error {
@@ -114,6 +169,17 @@ export class AtlasClient {
       headers,
     });
 
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      throw new AtlasAPIError(
+        `Expected JSON response but got ${contentType || 'unknown'}`,
+        response.status,
+        { rawResponse: text.substring(0, 500) }
+      );
+    }
+
     const data = await response.json();
 
     if (!response.ok) {
@@ -131,17 +197,24 @@ export class AtlasClient {
    * Generate a new store from a product URL or existing Shopify product
    */
   async generate(options: GenerateOptions): Promise<GenerateResponse> {
+    const body: Record<string, unknown> = {
+      url: options.url,
+      shopify_product_id: options.shopifyProductId,
+      region: options.region || 'us',
+      language: options.language || 'en',
+      type: options.type || 'single_product_shop',
+    };
+
+    if (options.templateSource) body.template_source = options.templateSource;
+    if (options.templateId) body.template_id = options.templateId;
+    if (options.themeId) body.theme_id = options.themeId;
+    if (options.pageTemplateSource) body.page_template_source = options.pageTemplateSource;
+    if (options.productPageTemplate) body.product_page_template = options.productPageTemplate;
+    if (options.researchContextId) body.research_context_id = options.researchContextId;
+
     return this.request<GenerateResponse>('/stores/generate', {
       method: 'POST',
-      body: JSON.stringify({
-        url: options.url,
-        shopify_product_id: options.shopifyProductId,
-        region: options.region || 'us',
-        language: options.language || 'en',
-        type: options.type || 'single_product_shop',
-        template_id: options.templateId,
-        research_context_id: options.researchContextId,
-      }),
+      body: JSON.stringify(body),
     });
   }
 
@@ -155,9 +228,13 @@ export class AtlasClient {
   /**
    * Import a generated store to Shopify
    */
-  async import(jobId: string): Promise<ImportResponse> {
+  async import(jobId: string, options?: ImportOptions): Promise<ImportResponse> {
+    const body: Record<string, unknown> = {};
+    if (options?.onlyImportProduct) body.only_import_product = true;
+
     return this.request<ImportResponse>(`/stores/${jobId}/import`, {
       method: 'POST',
+      body: JSON.stringify(body),
     });
   }
 
@@ -180,6 +257,43 @@ export class AtlasClient {
    */
   async getStore(id: number): Promise<Store> {
     return this.request<Store>(`/stores/${id}`);
+  }
+
+  /**
+   * List available Atlas theme templates
+   */
+  async listTemplates(limit = 20, offset = 0): Promise<ListTemplatesResponse> {
+    return this.request<ListTemplatesResponse>(`/templates?limit=${limit}&offset=${offset}`);
+  }
+
+  /**
+   * Get details of a specific template
+   */
+  async getTemplate(id: number): Promise<Template> {
+    return this.request<Template>(`/templates/${id}`);
+  }
+
+  /**
+   * List merchant's Shopify themes
+   */
+  async listThemes(): Promise<ListThemesResponse> {
+    return this.request<ListThemesResponse>('/themes');
+  }
+
+  /**
+   * Get details of a specific theme including product page templates
+   */
+  async getTheme(id: number): Promise<Theme> {
+    return this.request<Theme>(`/themes/${id}`);
+  }
+
+  /**
+   * Get product page templates for a specific theme
+   */
+  async getThemeProductTemplates(
+    themeId: number
+  ): Promise<{ theme_id: number; product_templates: ProductTemplate[] }> {
+    return this.request(`/themes/${themeId}/product_templates`);
   }
 
   /**
