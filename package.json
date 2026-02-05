@@ -1,0 +1,62 @@
+{
+  "name": "atlas-store-cli",
+  "version": "0.1.0",
+  "description": "CLI for AI agents to generate and manage Shopify stores via Atlas",
+  "type": "module",
+  "bin": {
+    "atlas": "./dist/cli.js",
+    "atlas-cli": "./dist/cli.js"
+  },
+  "main": "./dist/sdk/index.js",
+  "types": "./dist/sdk/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/sdk/index.d.ts",
+      "import": "./dist/sdk/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "SKILL.md",
+    "skill.json"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint src",
+    "test": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "shopify",
+    "ecommerce",
+    "store-builder",
+    "atlas",
+    "cli"
+  ],
+  "author": "Tucker George",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jarvisgeorge77/atlas-cli.git"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "eslint": "^9",
+    "tsup": "^8",
+    "typescript": "^5",
+    "vitest": "^3"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^8.2.0",
+    "chalk": "^5",
+    "commander": "^13",
+    "conf": "^13",
+    "ora": "^8"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

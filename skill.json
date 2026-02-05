@@ -1,0 +1,56 @@
+{
+  "name": "atlas-store-cli",
+  "version": "0.1.0",
+  "description": "Generate and manage Shopify stores programmatically via Atlas AI",
+  "homepage": "https://atlas-app.com",
+  "repository": "https://github.com/jarvisgeorge77/atlas-cli",
+  "author": "Tucker George",
+  "license": "MIT",
+  "keywords": [
+    "ai",
+    "agents",
+    "shopify",
+    "ecommerce",
+    "store-builder",
+    "dropshipping",
+    "atlas"
+  ],
+  "categories": ["ecommerce", "automation", "ai"],
+  "capabilities": [
+    "store-generation",
+    "product-import",
+    "theme-creation",
+    "ai-copywriting"
+  ],
+  "api": {
+    "base_url": "https://atlas-app.herokuapp.com/api/v1",
+    "auth": "api_key",
+    "auth_header": "X-Atlas-Api-Key"
+  },
+  "cli": {
+    "bin": "atlas",
+    "package": "atlas-store-cli"
+  },
+  "commands": [
+    {
+      "name": "auth",
+      "description": "Configure API authentication"
+    },
+    {
+      "name": "generate",
+      "description": "Generate a store from product URL"
+    },
+    {
+      "name": "status",
+      "description": "Check generation job status"
+    },
+    {
+      "name": "import",
+      "description": "Import generated store to Shopify"
+    },
+    {
+      "name": "list",
+      "description": "List generated stores"
+    }
+  ]
+}
