@@ -1,14 +1,14 @@
 ---
 name: atlas-store-cli
 version: 0.1.0
-description: Generate and manage Shopify stores programmatically via Atlas AI. Create full stores from Amazon, AliExpress, or Etsy product URLs with AI-generated themes, copy, and images.
-homepage: https://atlas-app.com
+description: Generate and manage Shopify stores programmatically via Atlas AI. Create full stores or product pages from Amazon, AliExpress, or Etsy product URLs with AI-generated themes, copy, and images.
+homepage: https://helloatlas.io
 metadata: {"atlas":{"emoji":"🏪","category":"ecommerce","api_base":"https://atlas-app.herokuapp.com/api/v1"}}
 ---
 
 # Atlas Store CLI
 
-Generate complete Shopify stores from product URLs using AI. Transform Amazon, AliExpress, Etsy, or any product listing into a full Shopify store with AI-generated themes, copy, and optimized layouts.
+Generate complete Shopify stores or product pages from product URLs using AI. Transform Amazon, AliExpress, Etsy, or any product listing into a full Shopify store with AI-generated themes, copy, and optimized layouts.
 
 ## Quick Start
 
@@ -61,11 +61,85 @@ export ATLAS_API_KEY="atlas_your_api_key"
 
 ---
 
-## Generate a Store
+## Generation Types
 
-Generate a complete Shopify store from a product URL:
+### Full Store with Theme (default)
+Generates a complete store including product, theme, and all pages.
 
-### Via CLI
+```bash
+atlas generate --url "..." --type single_product_shop
+```
+
+### Product Page Only
+Generates just a product page and imports it into an existing theme.
+
+```bash
+atlas generate --url "..." --type product_page --theme-id 123456789
+```
+
+---
+
+## Template Sources
+
+### Atlas Template Library (default)
+Use a pre-designed Atlas theme template.
+
+```bash
+# List available templates
+atlas templates
+
+# Generate with specific template
+atlas generate --url "..." --template-source atlas_library --template-id 5
+```
+
+### Existing Theme
+Base the generation on the merchant's existing Shopify theme.
+
+```bash
+# List merchant's themes
+atlas themes
+
+# Generate based on existing theme
+atlas generate --url "..." --template-source existing_theme --theme-id 123456789
+```
+
+### Atlas Default
+Use the default Atlas template (no template selection needed).
+
+```bash
+atlas generate --url "..." --template-source default
+```
+
+---
+
+## Product Page Generation
+
+When generating product pages (`--type product_page`):
+
+### Atlas Default Layout
+Use the standard Atlas product page sections.
+
+```bash
+atlas generate --url "..." --type product_page --theme-id 123 --page-template-source atlas_default
+```
+
+### Copy Existing Page Layout
+Copy the layout from an existing product page template.
+
+```bash
+# List product page templates in a theme
+atlas themes product-templates 123456789
+
+# Generate with existing page template
+atlas generate --url "..." --type product_page --theme-id 123 \
+  --page-template-source existing_page --product-page-template "1"
+```
+
+---
+
+## CLI Commands
+
+### Generate a Store
 ```bash
 # From Amazon product
 npx atlas-store-cli generate --url "https://amazon.com/dp/B08N5WRWNW"
@@ -75,66 +149,92 @@ npx atlas-store-cli generate \
   --url "https://amazon.com/dp/B08N5WRWNW" \
   --language en \
   --region us \
+  --template-source atlas_library \
+  --template-id 5 \
   --wait
 
-# From AliExpress
-npx atlas-store-cli generate --url "https://aliexpress.com/item/..." --wait
+# Product page only
+npx atlas-store-cli generate \
+  --url "https://amazon.com/dp/B08N5WRWNW" \
+  --type product_page \
+  --theme-id 123456789 \
+  --wait
 
-# From Etsy
-npx atlas-store-cli generate --url "https://etsy.com/listing/..." --wait
+# Interactive mode (prompts for all options)
+npx atlas-store-cli generate
 ```
 
-### Via API
+### List Templates
 ```bash
-curl -X POST https://atlas-app.herokuapp.com/api/v1/stores/generate \
-  -H "X-Atlas-Api-Key: atlas_your_key" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "url": "https://amazon.com/dp/B08N5WRWNW",
-    "region": "us",
-    "language": "en",
-    "type": "single_product_shop"
-  }'
+npx atlas-store-cli templates
+npx atlas-store-cli templates show 5  # Show template details
 ```
 
-**Parameters:**
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `url` | Yes* | Product URL (Amazon, AliExpress, Etsy, etc.) |
-| `shopify_product_id` | Yes* | OR use existing Shopify product ID |
-| `region` | No | Region code: us, uk, de, fr, etc. (default: us) |
-| `language` | No | Language: en, es, de, fr, etc. (default: en) |
-| `type` | No | `single_product_shop` or `product_page` (default: single_product_shop) |
-| `template_id` | No | Theme template ID to use as base |
+### List Themes
+```bash
+npx atlas-store-cli themes
+npx atlas-store-cli themes show 123456789  # Show theme details
+npx atlas-store-cli themes product-templates 123456789  # List product page templates
+```
 
-*Either `url` or `shopify_product_id` is required.
+### Check Status
+```bash
+npx atlas-store-cli status JOB_ID
+npx atlas-store-cli status JOB_ID --wait
+```
 
-**Response:**
-```json
-{
-  "job_id": "abc123-def456-...",
-  "status": "pending",
-  "poll_url": "/api/v1/stores/abc123.../status",
-  "message": "Store generation started. Poll the status endpoint to check progress."
-}
+### Import to Shopify
+```bash
+npx atlas-store-cli import JOB_ID
+npx atlas-store-cli import JOB_ID --wait
+```
+
+### List Stores
+```bash
+npx atlas-store-cli list
+npx atlas-store-cli list --limit 50 --offset 0
 ```
 
 ---
 
-## Check Generation Status
+## API Reference
 
-### Via CLI
-```bash
-npx atlas-store-cli status JOB_ID
-
-# Wait for completion
-npx atlas-store-cli status JOB_ID --wait
+### Generate Store
+```
+POST /api/v1/stores/generate
 ```
 
-### Via API
-```bash
-curl https://atlas-app.herokuapp.com/api/v1/stores/JOB_ID/status \
-  -H "X-Atlas-Api-Key: atlas_your_key"
+**Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| url | string | * | Product URL (Amazon, AliExpress, Etsy, etc.) |
+| shopify_product_id | string | * | OR existing Shopify product ID |
+| region | string | | Region code (us, uk, de, etc.) Default: us |
+| language | string | | Language code (en, es, de, etc.) Default: en |
+| type | string | | `single_product_shop` (default) or `product_page` |
+| template_source | string | | `atlas_library`, `existing_theme`, or `default` |
+| template_id | integer | | Atlas template ID (for template_source=atlas_library) |
+| theme_id | integer | | Shopify theme ID (required for product_page) |
+| page_template_source | string | | `atlas_default` or `existing_page` |
+| product_page_template | string | | Product page template name |
+| research_context_id | integer | | Research context ID for ICP-specific generation |
+
+*One of `url` or `shopify_product_id` is required.
+
+**Response:**
+```json
+{
+  "job_id": "abc-123",
+  "status": "pending",
+  "type": "single_product_shop",
+  "poll_url": "/api/v1/stores/abc-123/status",
+  "message": "Store generation started."
+}
+```
+
+### Check Status
+```
+GET /api/v1/stores/:job_id/status
 ```
 
 **Response:**
@@ -152,131 +252,116 @@ curl https://atlas-app.herokuapp.com/api/v1/stores/JOB_ID/status \
 }
 ```
 
-**Status values:** `pending`, `processing`, `completed`, `failed`
-
----
-
-## Import to Shopify
-
-Once generation is complete, import the store to Shopify:
-
-### Via CLI
-```bash
-npx atlas-store-cli import JOB_ID
-
-# Wait for import to complete
-npx atlas-store-cli import JOB_ID --wait
+### Import to Shopify
+```
+POST /api/v1/stores/:job_id/import
 ```
 
-### Via API
-```bash
-curl -X POST https://atlas-app.herokuapp.com/api/v1/stores/JOB_ID/import \
-  -H "X-Atlas-Api-Key: atlas_your_key"
+**Parameters:**
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| only_import_product | boolean | Only import product, not theme (for product pages) |
+
+### List Templates
+```
+GET /api/v1/templates
 ```
 
 **Response:**
 ```json
 {
-  "status": "importing",
-  "import_job_id": "xyz789...",
-  "poll_url": "/api/v1/stores/xyz789.../import_status",
-  "message": "Import started. Poll the import status endpoint to check progress."
+  "templates": [
+    {
+      "id": 1,
+      "name": "Atlas Default",
+      "theme_version": "3.0",
+      "stores_using": 1500
+    }
+  ],
+  "total": 15
 }
 ```
 
+### List Merchant Themes
+```
+GET /api/v1/themes
+```
+
+**Response:**
+```json
+{
+  "themes": [
+    {
+      "id": 123456789,
+      "name": "My Store Theme",
+      "role": "main",
+      "is_atlas_theme": true,
+      "atlas_version": "3.0"
+    }
+  ]
+}
+```
+
+### Get Theme Product Templates
+```
+GET /api/v1/themes/:id/product_templates
+```
+
 ---
 
-## List Generated Stores
+## SDK Usage
 
-### Via CLI
-```bash
-npx atlas-store-cli list
-npx atlas-store-cli list --limit 50 --offset 0
-```
-
-### Via API
-```bash
-curl "https://atlas-app.herokuapp.com/api/v1/stores?limit=20&offset=0" \
-  -H "X-Atlas-Api-Key: atlas_your_key"
-```
-
----
-
-## Full Pipeline Example
-
-### CLI: Generate and Import
-```bash
-# Generate and wait for completion
-npx atlas-store-cli generate --url "https://amazon.com/dp/B08N5WRWNW" --wait
-
-# Note the job ID from output, then import
-npx atlas-store-cli import abc123-job-id --wait
-```
-
-### SDK: Full Automation
 ```typescript
 import { AtlasClient } from 'atlas-store-cli';
 
-const atlas = new AtlasClient(process.env.ATLAS_API_KEY!);
+const atlas = new AtlasClient('atlas_your_api_key');
 
-async function createStore(productUrl: string) {
-  console.log('Starting store generation...');
-  
-  const result = await atlas.generateAndImport(
-    { url: productUrl, language: 'en', region: 'us' },
-    {
-      onGenerateProgress: (s) => console.log(`Generating: ${s.percentage_complete}%`),
-      onImportProgress: (s) => console.log(`Importing: ${s.percentage_complete}%`),
-    }
-  );
-  
-  console.log('Store created!');
-  console.log('Product:', result.generateResult.result?.product_name);
-  console.log('Theme ID:', result.importResult.result?.theme_id);
-  
-  return result;
+// List available templates
+const templates = await atlas.listTemplates();
+console.log(templates.templates);
+
+// List merchant themes
+const themes = await atlas.listThemes();
+console.log(themes.themes);
+
+// Generate with specific template
+const job = await atlas.generate({
+  url: 'https://amazon.com/dp/B08N5WRWNW',
+  templateSource: 'atlas_library',
+  templateId: '5',
+  language: 'en',
+});
+
+// Wait and import
+const result = await atlas.waitForCompletion(job.job_id);
+if (result.status === 'completed') {
+  await atlas.import(job.job_id);
 }
 
-createStore('https://amazon.com/dp/B08N5WRWNW');
+// Or use the full pipeline
+const { importResult } = await atlas.generateAndImport({
+  url: 'https://amazon.com/dp/B08N5WRWNW',
+});
+console.log('Theme ID:', importResult.theme_id);
 ```
 
-### API: Curl Pipeline
-```bash
-#!/bin/bash
-API_KEY="atlas_your_key"
-URL="https://amazon.com/dp/B08N5WRWNW"
+### Product Page Generation
 
-# Start generation
-JOB=$(curl -s -X POST "https://atlas-app.herokuapp.com/api/v1/stores/generate" \
-  -H "X-Atlas-Api-Key: $API_KEY" \
-  -H "Content-Type: application/json" \
-  -d "{\"url\": \"$URL\"}")
+```typescript
+// Get merchant's themes
+const themes = await atlas.listThemes();
+const atlasTheme = themes.themes.find(t => t.is_atlas_theme);
 
-JOB_ID=$(echo $JOB | jq -r '.job_id')
-echo "Job started: $JOB_ID"
+// Generate product page into existing theme
+const job = await atlas.generate({
+  url: 'https://amazon.com/dp/B08N5WRWNW',
+  type: 'product_page',
+  themeId: atlasTheme.id.toString(),
+  pageTemplateSource: 'atlas_default',
+});
 
-# Poll until complete
-while true; do
-  STATUS=$(curl -s "https://atlas-app.herokuapp.com/api/v1/stores/$JOB_ID/status" \
-    -H "X-Atlas-Api-Key: $API_KEY")
-  
-  CURRENT=$(echo $STATUS | jq -r '.status')
-  PERCENT=$(echo $STATUS | jq -r '.percentage_complete')
-  
-  echo "Status: $CURRENT ($PERCENT%)"
-  
-  if [ "$CURRENT" = "completed" ] || [ "$CURRENT" = "failed" ]; then
-    break
-  fi
-  
-  sleep 5
-done
-
-# Import if successful
-if [ "$CURRENT" = "completed" ]; then
-  curl -X POST "https://atlas-app.herokuapp.com/api/v1/stores/$JOB_ID/import" \
-    -H "X-Atlas-Api-Key: $API_KEY"
-fi
+// Import (only product, no theme)
+await atlas.import(job.job_id, { onlyImportProduct: true });
 ```
 
 ---
@@ -313,18 +398,20 @@ All endpoints return errors in this format:
 | 404 | Job not found | Job ID doesn't exist or expired |
 | 429 | Rate limited | Wait before making more requests |
 | 422 | Invalid URL | Check the product URL is valid |
+| 422 | theme_id required | Product page generation requires theme_id |
 
 ---
 
 ## Rate Limits
 
 - **100 requests per minute** per API key
-- Generation jobs may take 1-5 minutes depending on complexity
+- **10 concurrent generation jobs** per shop
+- Generation jobs typically take 1-3 minutes
 - Import jobs typically take 30-60 seconds
 
 ---
 
-## API Reference
+## API Endpoints Summary
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -334,6 +421,11 @@ All endpoints return errors in this format:
 | `/stores/:id/import_status` | GET | Check import status |
 | `/stores` | GET | List generated stores |
 | `/stores/:id` | GET | Get store details |
+| `/templates` | GET | List Atlas theme templates |
+| `/templates/:id` | GET | Get template details |
+| `/themes` | GET | List merchant Shopify themes |
+| `/themes/:id` | GET | Get theme details |
+| `/themes/:id/product_templates` | GET | List product page templates |
 
 ---
 
@@ -348,6 +440,6 @@ All endpoints return errors in this format:
 
 ## Links
 
-- **Documentation:** https://atlas-app.com/docs/api
+- **Documentation:** https://helloatlas.io/docs/api
 - **Get API Key:** Atlas App > Settings > API Keys
 - **Support:** support@helloatlas.io
