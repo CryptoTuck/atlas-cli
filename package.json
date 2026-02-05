@@ -40,7 +40,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jarvisgeorge77/atlas-cli.git"
+    "url": "https://github.com/CryptoTuck/atlas-cli.git"
   },
   "devDependencies": {
     "@types/node": "^22",

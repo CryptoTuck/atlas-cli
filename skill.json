@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Generate and manage Shopify stores programmatically via Atlas AI",
   "homepage": "https://atlas-app.com",
-  "repository": "https://github.com/jarvisgeorge77/atlas-cli",
+  "repository": "https://github.com/CryptoTuck/atlas-cli",
   "author": "Tucker George",
   "license": "MIT",
   "keywords": [
