@@ -22,7 +22,7 @@ export const authCommand = new Command('auth')
       console.log('');
       if (isLocal) {
         console.log(chalk.dim('  Note: Using local dev URL. For production, run:'));
-        console.log(chalk.dim('    atlas auth --api-base https://atlas-app.herokuapp.com/api/v1'));
+        console.log(chalk.dim('    atlas auth --api-base https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1'));
       }
       return;
     }

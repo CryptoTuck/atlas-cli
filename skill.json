@@ -23,7 +23,7 @@
     "ai-copywriting"
   ],
   "api": {
-    "base_url": "https://atlas-app.herokuapp.com/api/v1",
+    "base_url": "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1",
     "auth": "api_key",
     "auth_header": "X-Atlas-Api-Key"
   },

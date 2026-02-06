@@ -8,7 +8,7 @@ interface AtlasConfig {
 const config = new Conf<AtlasConfig>({
   projectName: 'atlas-cli',
   defaults: {
-    apiBase: 'https://atlas-app.herokuapp.com/api/v1',
+    apiBase: 'https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1',
   },
 });
 

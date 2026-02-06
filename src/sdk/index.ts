@@ -151,7 +151,7 @@ export class AtlasClient {
   private apiKey: string;
   private apiBase: string;
 
-  constructor(apiKey: string, apiBase = 'https://atlas-app.herokuapp.com/api/v1') {
+  constructor(apiKey: string, apiBase = 'https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1') {
     this.apiKey = apiKey;
     this.apiBase = apiBase;
   }

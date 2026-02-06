@@ -3,7 +3,7 @@ name: atlas-copilot-cli
 version: 0.1.0
 description: Generate and manage Shopify stores programmatically via Atlas AI. Create full stores or product pages from Amazon, AliExpress, or Etsy product URLs with AI-generated themes, copy, and images.
 homepage: https://helloatlas.io
-metadata: {"atlas":{"emoji":"🏪","category":"ecommerce","api_base":"https://atlas-app.herokuapp.com/api/v1"}}
+metadata: {"atlas":{"emoji":"🏪","category":"ecommerce","api_base":"https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1"}}
 ---
 
 # Atlas Copilot CLI
@@ -275,13 +275,13 @@ const { generateResult, importResult } = await atlas.generateAndImport({
 
 **Option 3: API (curl)**
 ```bash
-curl -X POST https://atlas-app.herokuapp.com/api/v1/stores/generate \
+curl -X POST https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1/stores/generate \
   -H "X-Atlas-Api-Key: atlas_your_key" \
   -H "Content-Type: application/json" \
   -d '{"url": "https://amazon.com/dp/B08N5WRWNW"}'
 ```
 
-**Base URL:** `https://atlas-app.herokuapp.com/api/v1`
+**Base URL:** `https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1`
 
 ---
 
@@ -309,7 +309,7 @@ POST /api/v1/stores/generate
 
 **Full curl example:**
 ```bash
-curl -X POST "https://atlas-app.herokuapp.com/api/v1/stores/generate" \
+curl -X POST "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1/stores/generate" \
   -H "X-Atlas-Api-Key: atlas_your_key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -357,7 +357,7 @@ GET /api/v1/stores/:job_id/status
 
 **curl example:**
 ```bash
-curl "https://atlas-app.herokuapp.com/api/v1/stores/abc-123/status" \
+curl "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1/stores/abc-123/status" \
   -H "X-Atlas-Api-Key: atlas_your_key"
 ```
 
@@ -399,7 +399,7 @@ POST /api/v1/stores/:job_id/import
 
 **curl example:**
 ```bash
-curl -X POST "https://atlas-app.herokuapp.com/api/v1/stores/abc-123/import" \
+curl -X POST "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1/stores/abc-123/import" \
   -H "X-Atlas-Api-Key: atlas_your_key" \
   -H "Content-Type: application/json" \
   -d '{}'
@@ -417,7 +417,7 @@ GET /api/v1/templates
 
 **curl example:**
 ```bash
-curl "https://atlas-app.herokuapp.com/api/v1/templates" \
+curl "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1/templates" \
   -H "X-Atlas-Api-Key: atlas_your_key"
 ```
 
@@ -518,7 +518,7 @@ atlas products --query "headphones"
 
 ### Via API
 ```bash
-curl "https://atlas-app.herokuapp.com/api/v1/products?limit=20" \
+curl "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1/products?limit=20" \
   -H "X-Atlas-Api-Key: atlas_your_key"
 ```
 
@@ -548,7 +548,7 @@ atlas generate --product-id 123456789 --wait
 
 Or via curl:
 ```bash
-curl -X POST "https://atlas-app.herokuapp.com/api/v1/stores/generate" \
+curl -X POST "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1/stores/generate" \
   -H "X-Atlas-Api-Key: atlas_your_key" \
   -H "Content-Type: application/json" \
   -d '{"shopify_product_id": "123456789"}'
