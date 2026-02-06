@@ -3,7 +3,7 @@
  * 
  * @example
  * ```typescript
- * import { AtlasClient } from 'atlas-store-cli';
+ * import { AtlasClient } from 'atlas-copilot-cli';
  * 
  * const atlas = new AtlasClient('atlas_your_api_key');
  * 

@@ -5,9 +5,9 @@ Generate complete Shopify stores or product pages from product URLs using AI. Tr
 ## Installation
 
 ```bash
-npm install -g atlas-store-cli
+npm install -g atlas-copilot-cli
 # or use directly with npx
-npx atlas-store-cli
+npx atlas-copilot-cli
 ```
 
 ## Quick Start
@@ -64,7 +64,7 @@ atlas generate --url "..." --template-source existing_theme --theme-id 123456789
 ## SDK Usage
 
 ```typescript
-import { AtlasClient } from 'atlas-store-cli';
+import { AtlasClient } from 'atlas-copilot-cli';
 
 const atlas = new AtlasClient('atlas_your_api_key');
 

@@ -1,11 +1,12 @@
 {
-  "name": "atlas-store-cli",
+  "name": "atlas-copilot-cli",
   "version": "0.1.0",
   "description": "CLI for AI agents to generate and manage Shopify stores via Atlas",
   "type": "module",
   "bin": {
     "atlas": "./dist/cli.js",
-    "atlas-cli": "./dist/cli.js"
+    "atlas-cli": "./dist/cli.js",
+    "atlas-copilot": "./dist/cli.js"
   },
   "main": "./dist/sdk/index.js",
   "types": "./dist/sdk/index.d.ts",

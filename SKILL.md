@@ -1,5 +1,5 @@
 ---
-name: atlas-store-cli
+name: atlas-copilot-cli
 version: 0.1.0
 description: Generate and manage Shopify stores programmatically via Atlas AI. Create full stores or product pages from Amazon, AliExpress, or Etsy product URLs with AI-generated themes, copy, and images.
 homepage: https://helloatlas.io
@@ -15,18 +15,18 @@ Generate complete Shopify stores or product pages from product URLs using AI. Tr
 **Option 1: CLI (Recommended for agents)**
 ```bash
 # Configure API key (one-time)
-npx atlas-store-cli auth --key "atlas_your_api_key"
+npx atlas-copilot-cli auth --key "atlas_your_api_key"
 
 # Generate a store from product URL
-npx atlas-store-cli generate --url "https://amazon.com/dp/B08N5WRWNW" --wait
+npx atlas-copilot-cli generate --url "https://amazon.com/dp/B08N5WRWNW" --wait
 
 # Import to Shopify
-npx atlas-store-cli import JOB_ID --wait
+npx atlas-copilot-cli import JOB_ID --wait
 ```
 
 **Option 2: SDK (For programmatic use)**
 ```typescript
-import { AtlasClient } from 'atlas-store-cli';
+import { AtlasClient } from 'atlas-copilot-cli';
 
 const atlas = new AtlasClient('atlas_your_api_key');
 const { generateResult, importResult } = await atlas.generateAndImport({
@@ -51,7 +51,7 @@ curl -X POST https://atlas-app.herokuapp.com/api/v1/stores/generate \
 Get your API key from the Atlas app settings page, then configure:
 
 ```bash
-npx atlas-store-cli auth --key "atlas_your_api_key"
+npx atlas-copilot-cli auth --key "atlas_your_api_key"
 ```
 
 Or set the environment variable:
@@ -142,10 +142,10 @@ atlas generate --url "..." --type product_page --theme-id 123 \
 ### Generate a Store
 ```bash
 # From Amazon product
-npx atlas-store-cli generate --url "https://amazon.com/dp/B08N5WRWNW"
+npx atlas-copilot-cli generate --url "https://amazon.com/dp/B08N5WRWNW"
 
 # With options
-npx atlas-store-cli generate \
+npx atlas-copilot-cli generate \
   --url "https://amazon.com/dp/B08N5WRWNW" \
   --language en \
   --region us \
@@ -154,45 +154,45 @@ npx atlas-store-cli generate \
   --wait
 
 # Product page only
-npx atlas-store-cli generate \
+npx atlas-copilot-cli generate \
   --url "https://amazon.com/dp/B08N5WRWNW" \
   --type product_page \
   --theme-id 123456789 \
   --wait
 
 # Interactive mode (prompts for all options)
-npx atlas-store-cli generate
+npx atlas-copilot-cli generate
 ```
 
 ### List Templates
 ```bash
-npx atlas-store-cli templates
-npx atlas-store-cli templates show 5  # Show template details
+npx atlas-copilot-cli templates
+npx atlas-copilot-cli templates show 5  # Show template details
 ```
 
 ### List Themes
 ```bash
-npx atlas-store-cli themes
-npx atlas-store-cli themes show 123456789  # Show theme details
-npx atlas-store-cli themes product-templates 123456789  # List product page templates
+npx atlas-copilot-cli themes
+npx atlas-copilot-cli themes show 123456789  # Show theme details
+npx atlas-copilot-cli themes product-templates 123456789  # List product page templates
 ```
 
 ### Check Status
 ```bash
-npx atlas-store-cli status JOB_ID
-npx atlas-store-cli status JOB_ID --wait
+npx atlas-copilot-cli status JOB_ID
+npx atlas-copilot-cli status JOB_ID --wait
 ```
 
 ### Import to Shopify
 ```bash
-npx atlas-store-cli import JOB_ID
-npx atlas-store-cli import JOB_ID --wait
+npx atlas-copilot-cli import JOB_ID
+npx atlas-copilot-cli import JOB_ID --wait
 ```
 
 ### List Stores
 ```bash
-npx atlas-store-cli list
-npx atlas-store-cli list --limit 50 --offset 0
+npx atlas-copilot-cli list
+npx atlas-copilot-cli list --limit 50 --offset 0
 ```
 
 ---
@@ -312,7 +312,7 @@ GET /api/v1/themes/:id/product_templates
 ## SDK Usage
 
 ```typescript
-import { AtlasClient } from 'atlas-store-cli';
+import { AtlasClient } from 'atlas-copilot-cli';
 
 const atlas = new AtlasClient('atlas_your_api_key');
 
