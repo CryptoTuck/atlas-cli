@@ -6,7 +6,7 @@ homepage: https://helloatlas.io
 metadata: {"atlas":{"emoji":"🏪","category":"ecommerce","api_base":"https://atlas-app.herokuapp.com/api/v1"}}
 ---
 
-# Atlas Store CLI
+# Atlas Co-pilot CLI
 
 Generate complete Shopify stores or product pages from product URLs using AI. Transform Amazon, AliExpress, Etsy, or any product listing into a full Shopify store with AI-generated themes, copy, and optimized layouts.
 
