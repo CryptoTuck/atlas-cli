@@ -263,6 +263,74 @@ export async function getThemeProductTemplates(
   return request(`/themes/${themeId}/product_templates`);
 }
 
+// Product types
+export interface Product {
+  id: string;
+  numeric_id: number;
+  title: string;
+  handle: string;
+  status: string;
+  vendor?: string;
+  product_type?: string;
+  featured_image?: string;
+  images_count?: number;
+  variants_count?: number;
+  price_range?: {
+    min: string;
+    max: string;
+    currency: string;
+  };
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface ProductDetails extends Product {
+  description_html?: string;
+  tags?: string[];
+  images?: Array<{ id: string; url: string; altText?: string }>;
+  variants?: Array<{
+    id: string;
+    title: string;
+    price: string;
+    compareAtPrice?: string;
+    sku?: string;
+    inventoryQuantity?: number;
+  }>;
+}
+
+export interface ListProductsOptions {
+  limit?: number;
+  cursor?: string;
+  query?: string;
+}
+
+export interface ListProductsResponse {
+  products: Product[];
+  page_info: {
+    has_next_page: boolean;
+    has_previous_page?: boolean;
+    next_cursor?: string;
+    end_cursor?: string;
+  };
+}
+
+// Product endpoints
+export async function listProducts(
+  options: ListProductsOptions = {}
+): Promise<ListProductsResponse> {
+  const params = new URLSearchParams();
+  if (options.limit) params.set('limit', options.limit.toString());
+  if (options.cursor) params.set('cursor', options.cursor);
+  if (options.query) params.set('query', options.query);
+  
+  const queryString = params.toString();
+  return request<ListProductsResponse>(`/products${queryString ? `?${queryString}` : ''}`);
+}
+
+export async function getProduct(id: string): Promise<ProductDetails> {
+  return request<ProductDetails>(`/products/${id}`);
+}
+
 // Utility function to poll for completion
 export async function waitForCompletion(
   jobId: string,

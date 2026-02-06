@@ -505,6 +505,57 @@ const { importResult } = await atlas.generateAndImport({
 
 ---
 
+## Generating from Existing Shopify Products
+
+Instead of using a product URL, you can generate from products already in the merchant's Shopify store.
+
+### List Available Products
+```bash
+atlas products
+atlas products --limit 50
+atlas products --query "headphones"
+```
+
+### Via API
+```bash
+curl "https://atlas-app.herokuapp.com/api/v1/products?limit=20" \
+  -H "X-Atlas-Api-Key: atlas_your_key"
+```
+
+**Response:**
+```json
+{
+  "products": [
+    {
+      "id": "gid://shopify/Product/123456789",
+      "numeric_id": 123456789,
+      "title": "Premium Wireless Headphones",
+      "handle": "premium-wireless-headphones",
+      "status": "ACTIVE",
+      "featured_image": "https://cdn.shopify.com/...",
+      "price_range": { "min": "49.99", "max": "79.99", "currency": "USD" }
+    }
+  ],
+  "page_info": { "has_next_page": true, "next_cursor": "..." }
+}
+```
+
+### Generate from Product ID
+```bash
+# Use numeric_id or full GID
+atlas generate --product-id 123456789 --wait
+```
+
+Or via curl:
+```bash
+curl -X POST "https://atlas-app.herokuapp.com/api/v1/stores/generate" \
+  -H "X-Atlas-Api-Key: atlas_your_key" \
+  -H "Content-Type: application/json" \
+  -d '{"shopify_product_id": "123456789"}'
+```
+
+---
+
 ## Supported Product Sources
 
 | Source | URL Pattern | Example |
@@ -515,6 +566,7 @@ const { importResult } = await atlas.generateAndImport({
 | eBay | `ebay.com/itm/...` | `https://ebay.com/itm/123` |
 | Walmart | `walmart.com/ip/...` | `https://walmart.com/ip/Name/123` |
 | Target | `target.com/p/...` | `https://target.com/p/name/-/A-123` |
+| **Shopify** | Use `--product-id` | `atlas generate --product-id 123456789` |
 
 ---
 

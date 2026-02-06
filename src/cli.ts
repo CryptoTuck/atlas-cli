@@ -9,6 +9,7 @@ import { importCommand, importStatusCommand } from './commands/import.js';
 import { listCommand, showCommand } from './commands/list.js';
 import { templatesCommand } from './commands/templates.js';
 import { themesCommand } from './commands/themes.js';
+import { productsCommand } from './commands/products.js';
 
 const program = new Command();
 
@@ -27,6 +28,7 @@ program.addCommand(listCommand);
 program.addCommand(showCommand);
 program.addCommand(templatesCommand);
 program.addCommand(themesCommand);
+program.addCommand(productsCommand);
 
 // Default action - show help with branding
 program.action(() => {
