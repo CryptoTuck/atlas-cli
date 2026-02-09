@@ -556,6 +556,163 @@ curl -X POST "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v
 
 ---
 
+## Funnel Pages: Listicles and Advertorials
+
+Atlas can generate high-converting funnel pages that drive traffic to your products. These are standalone pages added to your theme that use proven marketing formats.
+
+### What Are Funnel Pages?
+
+**Listicles** are "list-style" articles like:
+- "Top 10 Reasons to Switch to [Product]"
+- "5 Ways [Product] Will Change Your Life"
+- "Why Experts Recommend [Product] in 2026"
+
+**Advertorials** are editorial-style native ad content that looks like a news article or blog post but promotes your product. They're designed to warm up cold traffic before sending them to your product page.
+
+### Why Use Funnel Pages?
+
+1. **Better for paid ads** - Cold traffic converts better when they read engaging content first
+2. **SEO value** - Rank for informational keywords
+3. **Build trust** - Editorial content feels less "salesy" than product pages
+4. **Retargeting** - Warm up visitors before showing them your product
+
+### Generating Funnel Pages
+
+**Interactive mode (recommended for first-time use):**
+```bash
+atlas funnels generate
+```
+
+This walks you through:
+1. Choosing funnel type (listicle or advertorial)
+2. Providing product URL or Shopify product ID
+3. Selecting target theme
+4. Choosing marketing angle and tone
+5. Optional custom headline
+
+**Direct commands:**
+```bash
+# Generate a listicle
+atlas listicle --url "https://amazon.com/dp/B08N5WRWNW" --theme-id 184197480726 --wait
+
+# Generate an advertorial
+atlas advertorial --url "https://amazon.com/dp/B08N5WRWNW" --theme-id 184197480726 --wait
+```
+
+**With all options:**
+```bash
+atlas listicle \
+  --url "https://amazon.com/dp/B08N5WRWNW" \
+  --theme-id 184197480726 \
+  --angle problem_solution \
+  --tone professional \
+  --headline "10 Reasons Experts Swear By This Product" \
+  --wait
+```
+
+### Funnel Options
+
+| Option | Values | Description |
+|--------|--------|-------------|
+| `--type` | `listicle`, `advertorial` | Type of funnel page |
+| `--theme-id` | number | Target Shopify theme (required) |
+| `--angle` | `problem_solution`, `comparison`, `story`, `urgency` | Marketing angle |
+| `--tone` | `professional`, `casual`, `urgent`, `luxury` | Writing tone |
+| `--headline` | string | Custom headline (AI generates if not provided) |
+| `--language` | `en`, `es`, `de`, etc. | Content language |
+
+### Marketing Angles Explained
+
+- **problem_solution** - Focus on pain points and how the product solves them. "Tired of X? Here's the solution..."
+- **comparison** - Compare to alternatives and competitors. "Why X beats the competition..."
+- **story** - Narrative-driven, testimonial style. "How I discovered X and it changed everything..."
+- **urgency** - Scarcity, limited time, act now. "Why you need to get X before it's gone..."
+
+### Tone Options Explained
+
+- **professional** - Authoritative, expert voice. Good for health, finance, tech products.
+- **casual** - Friendly, conversational. Good for lifestyle, fashion, everyday products.
+- **urgent** - High-energy, action-oriented. Good for limited offers, trending products.
+- **luxury** - Premium, sophisticated. Good for high-end products, jewelry, luxury goods.
+
+### Checking Funnel Status
+
+```bash
+atlas funnels status JOB_ID
+```
+
+### Via API
+
+**Generate Funnel:**
+```bash
+curl -X POST "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1/funnels/generate" \
+  -H "X-Atlas-Api-Key: atlas_your_key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://amazon.com/dp/B08N5WRWNW",
+    "funnel_type": "listicle",
+    "theme_id": "184197480726",
+    "angle": "problem_solution",
+    "tone": "professional"
+  }'
+```
+
+**Response:**
+```json
+{
+  "job_id": "funnel-abc-123",
+  "status": "pending",
+  "funnel_type": "listicle",
+  "poll_url": "/api/v1/funnels/funnel-abc-123/status",
+  "message": "Funnel generation started."
+}
+```
+
+**Check Status:**
+```bash
+curl "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1/funnels/funnel-abc-123/status" \
+  -H "X-Atlas-Api-Key: atlas_your_key"
+```
+
+**Completed Response:**
+```json
+{
+  "job_id": "funnel-abc-123",
+  "status": "completed",
+  "percentage_complete": 100,
+  "funnel_type": "listicle",
+  "result": {
+    "page_title": "10 Reasons Why Experts Recommend Premium Wireless Headphones",
+    "page_handle": "10-reasons-premium-wireless-headphones",
+    "preview_url": "https://your-store.myshopify.com/pages/10-reasons-premium-wireless-headphones?preview=true",
+    "sections_count": 12
+  }
+}
+```
+
+### Funnel Page Workflow
+
+```bash
+# Step 1: List your themes to find the target
+atlas themes
+
+# Step 2: Generate a listicle
+atlas listicle --url "https://amazon.com/dp/B08N5WRWNW" --theme-id 184197480726 --wait
+
+# Step 3: View the page at /pages/{page_handle}
+# The page is automatically added to your theme - no import step needed!
+```
+
+### Best Practices for Funnel Pages
+
+1. **Match angle to traffic source** - Use urgency for retargeting, story for cold traffic
+2. **Test different tones** - What works for luxury products won't work for casual products
+3. **Use listicles for SEO** - They rank well for "best X", "top X" keywords
+4. **Use advertorials for paid traffic** - They warm up cold traffic before the sale
+5. **Always include a product** - Funnels need a product URL or ID to promote
+
+---
+
 ## Supported Product Sources
 
 | Source | URL Pattern | Example |

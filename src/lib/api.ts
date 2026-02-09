@@ -14,6 +14,39 @@ export interface GenerateOptions {
   researchContextId?: string;
 }
 
+export interface FunnelGenerateOptions {
+  url?: string;
+  shopifyProductId?: string;
+  funnelType: 'listicle' | 'advertorial';
+  themeId: string;
+  headline?: string;
+  angle?: 'problem_solution' | 'comparison' | 'story' | 'urgency';
+  tone?: 'professional' | 'casual' | 'urgent' | 'luxury';
+  language?: string;
+}
+
+export interface FunnelGenerateResponse {
+  job_id: string;
+  status: string;
+  funnel_type: 'listicle' | 'advertorial';
+  poll_url: string;
+  message: string;
+}
+
+export interface FunnelStatusResponse {
+  job_id: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  percentage_complete: number;
+  funnel_type?: 'listicle' | 'advertorial';
+  result?: {
+    page_title?: string;
+    page_handle?: string;
+    preview_url?: string;
+    sections_count?: number;
+  };
+  error?: string;
+}
+
 export interface GenerateResponse {
   job_id: string;
   status: string;
@@ -358,4 +391,68 @@ export async function waitForCompletion(
   }
 
   throw new AtlasAPIError('Timeout waiting for job completion', 408);
+}
+
+// Funnel (Listicle/Advertorial) endpoints
+export async function generateFunnel(
+  options: FunnelGenerateOptions
+): Promise<FunnelGenerateResponse> {
+  const body: Record<string, unknown> = {
+    funnel_type: options.funnelType,
+    theme_id: options.themeId,
+    language: options.language || 'en',
+  };
+
+  if (options.url) {
+    body.url = options.url;
+  }
+  if (options.shopifyProductId) {
+    body.shopify_product_id = options.shopifyProductId;
+  }
+  if (options.headline) {
+    body.headline = options.headline;
+  }
+  if (options.angle) {
+    body.angle = options.angle;
+  }
+  if (options.tone) {
+    body.tone = options.tone;
+  }
+
+  return request<FunnelGenerateResponse>('/funnels/generate', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+export async function getFunnelStatus(jobId: string): Promise<FunnelStatusResponse> {
+  return request<FunnelStatusResponse>(`/funnels/${jobId}/status`);
+}
+
+export async function waitForFunnelCompletion(
+  jobId: string,
+  options: {
+    maxWaitMs?: number;
+    pollIntervalMs?: number;
+    onProgress?: (status: FunnelStatusResponse) => void;
+  } = {}
+): Promise<FunnelStatusResponse> {
+  const { maxWaitMs = 300000, pollIntervalMs = 5000, onProgress } = options;
+  const startTime = Date.now();
+
+  while (Date.now() - startTime < maxWaitMs) {
+    const status = await getFunnelStatus(jobId);
+    
+    if (onProgress) {
+      onProgress(status);
+    }
+
+    if (status.status === 'completed' || status.status === 'failed') {
+      return status;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+  }
+
+  throw new AtlasAPIError('Timeout waiting for funnel generation', 408);
 }

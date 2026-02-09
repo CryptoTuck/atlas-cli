@@ -10,6 +10,7 @@ import { listCommand, showCommand } from './commands/list.js';
 import { templatesCommand } from './commands/templates.js';
 import { themesCommand } from './commands/themes.js';
 import { productsCommand } from './commands/products.js';
+import { funnelsCommand, listicleCommand, advertorialCommand } from './commands/funnels.js';
 
 const program = new Command();
 
@@ -29,6 +30,11 @@ program.addCommand(showCommand);
 program.addCommand(templatesCommand);
 program.addCommand(themesCommand);
 program.addCommand(productsCommand);
+
+// Funnel commands (listicles and advertorials)
+program.addCommand(funnelsCommand);
+program.addCommand(listicleCommand);
+program.addCommand(advertorialCommand);
 
 // Default action - show help with branding
 program.action(() => {
@@ -54,6 +60,11 @@ ${chalk.bold('Commands:')}
   ${chalk.cyan('show')}          Show details of a specific store
   ${chalk.cyan('templates')}     List available Atlas theme templates
   ${chalk.cyan('themes')}        List your Shopify themes
+
+${chalk.bold.yellow('Funnel Pages:')}
+  ${chalk.cyan('funnels')}       Generate listicles and advertorials (interactive)
+  ${chalk.cyan('listicle')}      Generate a listicle funnel page (shortcut)
+  ${chalk.cyan('advertorial')}   Generate an advertorial funnel page (shortcut)
 
 ${chalk.bold('Generation Types:')}
   ${chalk.dim('# Full store with theme (default)')}
@@ -86,6 +97,16 @@ ${chalk.bold('Examples:')}
 
   ${chalk.dim('# Full pipeline: generate and import')}
   atlas generate --url "..." --wait && atlas import JOB_ID --wait
+
+${chalk.bold.yellow('Funnel Examples:')}
+  ${chalk.dim('# Generate a listicle (interactive mode)')}
+  atlas funnels generate
+
+  ${chalk.dim('# Generate a listicle (direct)')}
+  atlas listicle --url "https://amazon.com/dp/..." --theme-id 123 --wait
+
+  ${chalk.dim('# Generate an advertorial with custom options')}
+  atlas advertorial --url "..." --theme-id 123 --angle story --tone casual --wait
 
 ${chalk.dim('Documentation: https://helloatlas.io/docs/api')}
   `);
