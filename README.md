@@ -1,29 +1,32 @@
-# Atlas Store CLI
+# Atlas Copilot CLI
 
-Generate complete Shopify stores or product pages from product URLs using AI. Transform Amazon, AliExpress, Etsy, or any product listing into a full Shopify store with AI-generated themes, copy, and optimized layouts.
+Generate complete Shopify stores, product pages, and funnel pages from product URLs using AI. Transform Amazon, AliExpress, Etsy, or any product listing into a fully-functional Shopify store with AI-generated themes, copy, and optimized layouts.
 
 ## Installation
 
 ```bash
 npm install -g atlas-copilot-cli
-# or use directly with npx
+
+# Or use directly with npx
 npx atlas-copilot-cli
 ```
 
 ## Quick Start
 
 ```bash
-# Configure your API key
+# 1. Configure your API key (get it from Atlas app settings)
 atlas auth --key "atlas_your_api_key"
 
-# Generate a store from a product URL
+# 2. Generate a store from a product URL
 atlas generate --url "https://amazon.com/dp/B08N5WRWNW" --wait
 
-# Import to Shopify
+# 3. Import to Shopify
 atlas import JOB_ID --wait
 ```
 
 ## Commands
+
+### Core Commands
 
 | Command | Description |
 |---------|-------------|
@@ -34,12 +37,28 @@ atlas import JOB_ID --wait
 | `atlas import-status` | Check import job status |
 | `atlas list` | List your generated stores |
 | `atlas show` | Show details of a specific store |
+
+### Resource Commands
+
+| Command | Description |
+|---------|-------------|
 | `atlas templates` | List available Atlas theme templates |
 | `atlas themes` | List your Shopify themes |
+| `atlas products` | List your Shopify products |
+
+### Funnel Commands
+
+| Command | Description |
+|---------|-------------|
+| `atlas funnels` | List existing funnel pages |
+| `atlas funnels generate` | Interactive funnel generation |
+| `atlas listicle` | Generate a listicle funnel page |
+| `atlas advertorial` | Generate an advertorial funnel page |
 
 ## Generation Types
 
 ### Full Store (default)
+Creates a complete Shopify theme + product from a URL:
 ```bash
 atlas generate --url "https://amazon.com/dp/B08N5WRWNW" --wait
 ```
@@ -51,15 +70,49 @@ atlas generate --url "..." --template-source atlas_library --template-id 5 --wai
 ```
 
 ### Product Page Only
+Adds a product page to an existing theme:
 ```bash
 atlas themes  # Get your theme ID
 atlas generate --url "..." --type product_page --theme-id 123456789 --wait
 ```
 
-### Based on Existing Theme
+### From Existing Shopify Product
 ```bash
-atlas generate --url "..." --template-source existing_theme --theme-id 123456789 --wait
+atlas products  # Get product ID
+atlas generate --product-id 123456789 --wait
 ```
+
+## Funnel Pages
+
+Generate high-converting marketing pages that drive traffic to your products.
+
+### Listicles
+List-style articles like "Top 10 Reasons to Try [Product]":
+```bash
+atlas listicle --product-id 123456789 --theme-id 184197480726 --wait
+```
+
+### Advertorials
+Editorial-style native ad content:
+```bash
+atlas advertorial --product-id 123456789 --theme-id 184197480726 --wait
+```
+
+### Interactive Mode
+Walk through all options step-by-step:
+```bash
+atlas funnels generate
+```
+
+### Funnel Options
+
+| Option | Values | Description |
+|--------|--------|-------------|
+| `--product-id` | number | Shopify product ID (required) |
+| `--theme-id` | number | Target Shopify theme (required) |
+| `--angle` | `problem_solution`, `comparison`, `story`, `urgency` | Marketing angle |
+| `--tone` | `professional`, `casual`, `urgent`, `luxury` | Writing tone |
+| `--headline` | string | Custom headline (optional) |
 
 ## SDK Usage
 
@@ -69,38 +122,52 @@ import { AtlasClient } from 'atlas-copilot-cli';
 const atlas = new AtlasClient('atlas_your_api_key');
 
 // Full pipeline: generate and import
-const result = await atlas.generateAndImport({
-  url: 'https://amazon.com/dp/B08N5WRWNW',
-  language: 'en',
-  region: 'us'
+const { generateResult, importResult } = await atlas.generateAndImport({
+  url: 'https://amazon.com/dp/B08N5WRWNW'
 });
 
-console.log('Theme ID:', result.importResult.result?.theme_id);
+console.log('Theme ID:', importResult.result?.theme_id);
 
-// List templates
-const templates = await atlas.listTemplates();
-
-// Generate product page
+// Generate with specific template
 const job = await atlas.generate({
   url: 'https://amazon.com/dp/B08N5WRWNW',
-  type: 'product_page',
-  themeId: '123456789'
+  templateSource: 'atlas_library',
+  templateId: '5'
 });
+
+// Wait for completion
+const result = await atlas.waitForCompletion(job.job_id);
+
+// List resources
+const templates = await atlas.listTemplates();
+const themes = await atlas.listThemes();
+const products = await atlas.listProducts();
 ```
 
-## Supported Sources
+## Supported Product Sources
 
-- Amazon (`amazon.com/dp/...`)
-- AliExpress (`aliexpress.com/item/...`)
-- Etsy (`etsy.com/listing/...`)
-- eBay (`ebay.com/itm/...`)
-- Walmart (`walmart.com/ip/...`)
-- Target (`target.com/p/...`)
-- Existing Shopify products
+| Source | URL Pattern |
+|--------|-------------|
+| Amazon | `amazon.com/dp/...` |
+| AliExpress | `aliexpress.com/item/...` |
+| Etsy | `etsy.com/listing/...` |
+| eBay | `ebay.com/itm/...` |
+| Walmart | `walmart.com/ip/...` |
+| Target | `target.com/p/...` |
+| Shopify | Use `--product-id` flag |
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `ATLAS_API_KEY` | API key (alternative to `atlas auth`) |
+| `ATLAS_API_BASE` | Custom API base URL |
 
 ## Documentation
 
-See [SKILL.md](./SKILL.md) for complete API documentation.
+- **Full API Reference:** See [SKILL.md](./SKILL.md)
+- **Get API Key:** Atlas App → Settings → API Keys
+- **Website:** https://helloatlas.io
 
 ## License
 

@@ -609,48 +609,38 @@ This walks you through:
 
 **Direct commands:**
 ```bash
-# Generate a listicle from existing Shopify product
+# Generate a listicle
 atlas listicle --product-id 123456789 --theme-id 184197480726 --wait
 
-# Generate an advertorial from existing Shopify product
+# Generate an advertorial
 atlas advertorial --product-id 123456789 --theme-id 184197480726 --wait
 ```
 
-**With all options:**
+**With custom context:**
 ```bash
 atlas listicle \
-  --url "https://amazon.com/dp/B08N5WRWNW" \
+  --product-id 123456789 \
   --theme-id 184197480726 \
-  --angle problem_solution \
-  --tone professional \
-  --headline "10 Reasons Experts Swear By This Product" \
+  --context "Focus on noise cancellation and battery life" \
   --wait
 ```
 
 ### Funnel Options
 
-| Option | Values | Description |
-|--------|--------|-------------|
-| `--type` | `listicle`, `advertorial` | Type of funnel page |
-| `--theme-id` | number | Target Shopify theme (required) |
-| `--angle` | `problem_solution`, `comparison`, `story`, `urgency` | Marketing angle |
-| `--tone` | `professional`, `casual`, `urgent`, `luxury` | Writing tone |
-| `--headline` | string | Custom headline (AI generates if not provided) |
-| `--language` | `en`, `es`, `de`, etc. | Content language |
+| Option | Required | Description |
+|--------|----------|-------------|
+| `--product-id` | Yes | Shopify product ID (numeric) |
+| `--theme-id` | Yes | Target Shopify theme ID |
+| `--context` | No | Custom context for AI generation |
+| `--wait` | No | Wait for generation to complete |
 
-### Marketing Angles Explained
+### API Parameters
 
-- **problem_solution** - Focus on pain points and how the product solves them. "Tired of X? Here's the solution..."
-- **comparison** - Compare to alternatives and competitors. "Why X beats the competition..."
-- **story** - Narrative-driven, testimonial style. "How I discovered X and it changed everything..."
-- **urgency** - Scarcity, limited time, act now. "Why you need to get X before it's gone..."
-
-### Tone Options Explained
-
-- **professional** - Authoritative, expert voice. Good for health, finance, tech products.
-- **casual** - Friendly, conversational. Good for lifestyle, fashion, everyday products.
-- **urgent** - High-energy, action-oriented. Good for limited offers, trending products.
-- **luxury** - Premium, sophisticated. Good for high-end products, jewelry, luxury goods.
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `product_id` | Yes | Shopify product ID (numeric or GID) |
+| `theme_id` | Yes | Shopify theme ID to add the page to |
+| `custom_context` | No | Additional context for AI generation |
 
 ### Checking Funnel Status
 
@@ -660,51 +650,94 @@ atlas funnels status JOB_ID
 
 ### Via API
 
-**Generate Funnel:**
+**Generate Listicle:**
 ```bash
-curl -X POST "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1/funnels/generate" \
+curl -X POST "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1/funnels/listicle" \
   -H "X-Atlas-Api-Key: atlas_your_key" \
   -H "Content-Type: application/json" \
   -d '{
-    "url": "https://amazon.com/dp/B08N5WRWNW",
-    "funnel_type": "listicle",
+    "product_id": "123456789",
     "theme_id": "184197480726",
-    "angle": "problem_solution",
-    "tone": "professional"
+    "custom_context": "Focus on noise cancellation features"
+  }'
+```
+
+**Generate Advertorial:**
+```bash
+curl -X POST "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1/funnels/advertorial" \
+  -H "X-Atlas-Api-Key: atlas_your_key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "product_id": "123456789",
+    "theme_id": "184197480726"
   }'
 ```
 
 **Response:**
 ```json
 {
-  "job_id": "funnel-abc-123",
-  "status": "pending",
-  "funnel_type": "listicle",
-  "poll_url": "/api/v1/funnels/funnel-abc-123/status",
-  "message": "Funnel generation started."
+  "funnel_id": 123,
+  "status": "generating",
+  "content_type": "listicle",
+  "poll_url": "/api/v1/funnels/123/status",
+  "message": "Listicle generation started."
 }
 ```
 
 **Check Status:**
 ```bash
-curl "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1/funnels/funnel-abc-123/status" \
+curl "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1/funnels/123/status" \
   -H "X-Atlas-Api-Key: atlas_your_key"
 ```
 
-**Completed Response:**
+**Status Response:**
 ```json
 {
-  "job_id": "funnel-abc-123",
+  "id": 123,
+  "status": "generated",
+  "percentage_complete": 100,
+  "content_type": "listicle",
+  "import_url": "/api/v1/funnels/123/import"
+}
+```
+
+**Import Funnel to Theme:**
+```bash
+curl -X POST "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1/funnels/123/import" \
+  -H "X-Atlas-Api-Key: atlas_your_key"
+```
+
+**Import Response:**
+```json
+{
+  "status": "importing",
+  "job_id": "abc-123-def",
+  "poll_url": "/api/v1/funnels/import_status/abc-123-def",
+  "message": "Funnel import started. Poll the status endpoint to check progress."
+}
+```
+
+**Check Import Status:**
+```bash
+curl "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1/funnels/import_status/abc-123-def" \
+  -H "X-Atlas-Api-Key: atlas_your_key"
+```
+
+**Import Completed Response:**
+```json
+{
+  "job_id": "abc-123-def",
   "status": "completed",
   "percentage_complete": 100,
-  "funnel_type": "listicle",
-  "result": {
-    "page_title": "10 Reasons Why Experts Recommend Premium Wireless Headphones",
-    "page_handle": "10-reasons-premium-wireless-headphones",
-    "preview_url": "https://your-store.myshopify.com/pages/10-reasons-premium-wireless-headphones?preview=true",
-    "sections_count": 12
-  }
+  "page_handle": "10-reasons-premium-wireless-headphones",
+  "template_suffix": "listicle-123"
 }
+```
+
+**List All Funnels:**
+```bash
+curl "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1/funnels?content_type=listicle&limit=20" \
+  -H "X-Atlas-Api-Key: atlas_your_key"
 ```
 
 ### Funnel Page Workflow
@@ -713,20 +746,34 @@ curl "https://shopify-dropshipt-staging-a7146a2f286d.herokuapp.com/api/v1/funnel
 # Step 1: List your themes to find the target
 atlas themes
 
-# Step 2: Generate a listicle
-atlas listicle --url "https://amazon.com/dp/B08N5WRWNW" --theme-id 184197480726 --wait
+# Step 2: List your products to get a product ID
+atlas products
 
-# Step 3: View the page at /pages/{page_handle}
-# The page is automatically added to your theme - no import step needed!
+# Step 3: Generate a listicle for the product
+atlas listicle --product-id 123456789 --theme-id 184197480726 --wait
+
+# Step 4: The funnel page is added to your theme
+# View at /pages/{page_handle}
+```
+
+**Note:** Funnels require an existing Shopify product. If starting from a product URL:
+```bash
+# First generate and import a store to create the product
+atlas generate --url "https://amazon.com/dp/B08N5WRWNW" --wait
+atlas import JOB_ID --wait
+
+# Then use the product for funnels
+atlas products  # Get the product ID
+atlas listicle --product-id 123456789 --theme-id 184197480726 --wait
 ```
 
 ### Best Practices for Funnel Pages
 
-1. **Match angle to traffic source** - Use urgency for retargeting, story for cold traffic
-2. **Test different tones** - What works for luxury products won't work for casual products
-3. **Use listicles for SEO** - They rank well for "best X", "top X" keywords
-4. **Use advertorials for paid traffic** - They warm up cold traffic before the sale
-5. **Always include a product** - Funnels need a product URL or ID to promote
+1. **Create the product first** - Funnels require an existing Shopify product
+2. **Use listicles for SEO** - They rank well for "best X", "top X" keywords
+3. **Use advertorials for paid traffic** - They warm up cold traffic before the sale
+4. **Add custom context** - Tell the AI what to focus on for better results
+5. **Generate multiple variations** - Test different approaches for the same product
 
 ---
 
