@@ -578,6 +578,23 @@ Atlas can generate high-converting funnel pages that drive traffic to your produ
 
 ### Generating Funnel Pages
 
+**Important:** Funnel generation requires an existing Shopify product. If you have a product URL (Amazon, AliExpress, etc.), first generate a store to create the product, then use that product for funnels.
+
+**Recommended workflow:**
+```bash
+# Step 1: Generate a store from product URL (creates Shopify product)
+atlas generate --url "https://amazon.com/dp/B08N5WRWNW" --wait
+
+# Step 2: Import to create the product in Shopify
+atlas import JOB_ID --wait
+
+# Step 3: List your products to get the product ID
+atlas products
+
+# Step 4: Generate a funnel page using the product ID
+atlas listicle --product-id 123456789 --theme-id 184197480726 --wait
+```
+
 **Interactive mode (recommended for first-time use):**
 ```bash
 atlas funnels generate
@@ -585,18 +602,18 @@ atlas funnels generate
 
 This walks you through:
 1. Choosing funnel type (listicle or advertorial)
-2. Providing product URL or Shopify product ID
+2. Providing Shopify product ID
 3. Selecting target theme
 4. Choosing marketing angle and tone
 5. Optional custom headline
 
 **Direct commands:**
 ```bash
-# Generate a listicle
-atlas listicle --url "https://amazon.com/dp/B08N5WRWNW" --theme-id 184197480726 --wait
+# Generate a listicle from existing Shopify product
+atlas listicle --product-id 123456789 --theme-id 184197480726 --wait
 
-# Generate an advertorial
-atlas advertorial --url "https://amazon.com/dp/B08N5WRWNW" --theme-id 184197480726 --wait
+# Generate an advertorial from existing Shopify product
+atlas advertorial --product-id 123456789 --theme-id 184197480726 --wait
 ```
 
 **With all options:**
