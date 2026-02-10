@@ -287,7 +287,7 @@ export const listicleCommand = new Command('listicle')
   .option('--json', 'Output as JSON')
   .action(async (options) => {
     // Delegate to funnels generate with type set
-    const { generateFunnel, waitForFunnelCompletion, listThemes, FunnelStatusResponse } = await import('../lib/api.js');
+    const { generateFunnel, waitForFunnelCompletion, listThemes } = await import('../lib/api.js');
     
     if (!options.url && !options.productId) {
       console.error(chalk.red('Error: --url or --product-id is required'));
@@ -364,7 +364,7 @@ export const advertorialCommand = new Command('advertorial')
   .option('--wait', 'Wait for generation to complete')
   .option('--json', 'Output as JSON')
   .action(async (options) => {
-    const { generateFunnel, waitForFunnelCompletion, FunnelStatusResponse } = await import('../lib/api.js');
+    const { generateFunnel, waitForFunnelCompletion } = await import('../lib/api.js');
     
     if (!options.url && !options.productId) {
       console.error(chalk.red('Error: --url or --product-id is required'));

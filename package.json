@@ -44,10 +44,12 @@
     "url": "https://github.com/CryptoTuck/atlas-cli.git"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@types/node": "^22",
     "eslint": "^9",
     "tsup": "^8",
     "typescript": "^5",
+    "typescript-eslint": "^8.55.0",
     "vitest": "^3"
   },
   "dependencies": {
